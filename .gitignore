@@ -1,2 +1,4 @@
-project_scop.docx
+project_scope.docx
 .DS_Store
+stocksense-venv/
+.env
