@@ -23,59 +23,46 @@ ChartJS.register(
 );
 
 // Create Interface to pass data to the component
-interface Props {}
+interface Props {
+  symbol: string;
+  period: string;
+  color: string;
+}
 
-// const data = {
-//   labels: labels,
-//   datasets: [
-//     {
-//       label: 'Price',
-//       data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-//       borderColor: 'red',
-//     },
-//     {
-//       label: 'Sentiment',
-//       data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-//       borderColor: 'orange',
-//     },
-//   ],
-// };
-
-function TrendingGraph() {
-  // // symbol hook
-  // const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
-  // const handleSymbol = (selectedSymbol: string) => {
-  //   setSelectedSymbol(selectedSymbol);
-  //   onSelectedSymbol(selectedSymbol); // Create function
-  // };
-
-  // // horizontal scale hook
-  // const [selectedHorizontal, setSelectedHorizontal] = useState("1D");
-  // const handleHorizontalScale = (selectedHorizontal: string) => {
-  //   setSelectedHorizontal(selectedHorizontal);
-  //   onSelectedHorizontal(selectedHorizontal); // Create function
-  // };
-
-  // // vertical scale hook
-  // const [selectedVertical, setSelectedVertical] = useState("auto");
-  // const handleVerticalScale = (selectedVertical: string) => {
-  //   setSelectedVertical(selectedVertical);
-  //   onSelectedVertical(selectedVertical); // Create function
-  // };
-
+function TrendingGraph({ symbol, period, color }: Props) {
   const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [],
+    labels: [""],
+    datasets: [
+      {
+        label: "Prices",
+        data: [],
+        borderColor: "black",
+      },
+    ],
   });
 
-  const fetchDataFromAPI = async () => {
+  const fetchDataFromAPI = async (symbol: string, period: string) => {
     try {
       // Fetch data from API
-      const response = await fetch("your-api-url");
+      const response = await fetch(
+        "http://127.0.0.1:5000/" + symbol + "/historical/" + period
+      );
       const data = await response.json();
 
+      // Create chart data from retreived history
+      const fetched_data = {
+        labels: data["label"],
+        datasets: [
+          {
+            label: data["company"] + " (" + symbol + ")",
+            data: data["prices"],
+            borderColor: color,
+          },
+        ],
+      };
+
       // Set the state with retrieved data
-      setChartData(data);
+      setChartData(fetched_data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -83,8 +70,8 @@ function TrendingGraph() {
 
   // useEffect to fetch initial data when the component mounts
   useEffect(() => {
-    fetchDataFromAPI();
-  }, []); // empty dependency array so it runs on first render
+    fetchDataFromAPI(symbol, period);
+  }, [symbol, period]); // trigger the effect whenever symbol or period changes
 
   return (
     <>

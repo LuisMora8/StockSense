@@ -1,16 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
-  items: string[];
+  apiEndpoint: string;
   onSelectedItem: (item: string) => void;
 }
 
-function GraphLegend({ items, onSelectedItem }: Props) {
-  const [selectedItem, setSelectedItem] = useState(items[0]);
+interface APIData {
+  [key: string]: string;
+}
+
+function GraphLegend({ apiEndpoint, onSelectedItem }: Props) {
+  const [selectedItem, setSelectedItem] = useState("- - -");
+  const [items, setItems] = useState<APIData>({});
+
   const handleSelect = (selectedValue: string) => {
     setSelectedItem(selectedValue);
     onSelectedItem(selectedValue);
   };
+
+  const fetchDataFromAPI = async () => {
+    try {
+      // Fetch data from API
+      const response = await fetch("http://127.0.0.1:5000/" + apiEndpoint);
+      const data = await response.json();
+      // Set the state with retrieved data
+      setItems(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // useEffect to fetch initial data when the component mounts
+  useEffect(() => {
+    fetchDataFromAPI();
+  }, [apiEndpoint]); // empty dependency array so it runs on first render
 
   return (
     <div className="dropdown">
@@ -23,14 +46,14 @@ function GraphLegend({ items, onSelectedItem }: Props) {
         {selectedItem}
       </button>
       <ul className="dropdown-menu">
-        {items.map((item, index) => (
-          <li key={index}>
+        {Object.entries(items).map(([key, value]) => (
+          <li key={key}>
             <a
               className="dropdown-item"
               href="#"
-              onClick={() => handleSelect(item)}
+              onClick={() => handleSelect(key)}
             >
-              {item}
+              {value}
             </a>
           </li>
         ))}

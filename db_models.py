@@ -3,8 +3,20 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
 
-# Flask and SQLDatabase configuaration
+# Flask and Database configuaration
 app = Flask(__name__)
+load_dotenv()
 app.secret_key = os.getenv('SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///db.sqlite"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///stocksense.sqlite"
 db = SQLAlchemy(app)
+
+# Stocks Model
+class Stocks(db.Model):
+    __tablename__ = 'stocks'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    symbol = db.Column(db.String)
+    company_name = db.Column(db.String)
+
+    def __init__(self, symbol, company_name):
+        self.symbol = symbol
+        self.company_name = company_name
