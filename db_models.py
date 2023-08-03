@@ -18,5 +18,16 @@ class Stocks(db.Model):
     company_name = db.Column(db.String)
 
     def __init__(self, symbol, company_name):
+        super.__init__()
         self.symbol = symbol
         self.company_name = company_name
+
+# Periods Model
+class Periods(db.Model):
+    __tablename__ = 'periods'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    period = db.Column(db.String)
+
+    def __init__(self, period):
+        super.__init__()
+        self.period = period

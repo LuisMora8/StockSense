@@ -41,7 +41,11 @@ function TrendingGraph({ symbol, period, color }: Props) {
     ],
   });
 
-  const fetchDataFromAPI = async (symbol: string, period: string) => {
+  const fetchDataFromAPI = async (
+    symbol: string,
+    period: string,
+    color: string
+  ) => {
     try {
       // Fetch data from API
       const response = await fetch(
@@ -70,8 +74,8 @@ function TrendingGraph({ symbol, period, color }: Props) {
 
   // useEffect to fetch initial data when the component mounts
   useEffect(() => {
-    fetchDataFromAPI(symbol, period);
-  }, [symbol, period]); // trigger the effect whenever symbol or period changes
+    fetchDataFromAPI(symbol, period, color);
+  }, [symbol, period, color]); // trigger the effect whenever symbol or period changes
 
   return (
     <>
